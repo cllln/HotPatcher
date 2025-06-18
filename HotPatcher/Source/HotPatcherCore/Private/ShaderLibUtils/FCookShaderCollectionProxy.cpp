@@ -14,7 +14,7 @@ void FCookShaderCollectionProxy::Init()
 {
 	if(bShareShader)
 	{
-		SHADER_COOKER_CLASS::InitForCooking(bIsNative);
+		SHADER_COOKER_CLASS::InitForCooking(bIsNative, nullptr);
 		for(const auto& PlatformName:PlatformNames)
 		{
 			ITargetPlatform* TargetPlatform = UFlibHotPatcherCoreHelper::GetPlatformByName(PlatformName);

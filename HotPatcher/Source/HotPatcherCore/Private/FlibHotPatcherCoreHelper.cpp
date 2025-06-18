@@ -37,6 +37,7 @@
 #include "Misc/CoreMisc.h"
 #include "DerivedDataCacheInterface.h"
 #include "HotPatcherRuntime.h"
+#include "ZenCookArtifactReader.h"
 #include "Internationalization/PackageLocalizationManager.h"
 #include "Misc/ScopeExit.h"
 #include "Misc/EngineVersionComparison.h"
@@ -347,7 +348,8 @@ FSavePackageContext* UFlibHotPatcherCoreHelper::CreateSaveContext(const ITargetP
 	FString WriterDebugName;
 	if (bUseZenLoader)
 	{
-		PackageWriter = new FZenStoreWriter(ResolvedProjectPath, ResolvedMetadataPath, TargetPlatform);
+		TSharedRef<FZenCookArtifactReader> ZenCookArtifactReader = MakeShared<FZenCookArtifactReader>(ResolvedProjectPath, ResolvedMetadataPath, TargetPlatform);
+		PackageWriter = new FZenStoreWriter(ResolvedProjectPath, ResolvedMetadataPath, TargetPlatform, ZenCookArtifactReader);
 		WriterDebugName = TEXT("ZenStore");
 	}
 	else
@@ -1617,7 +1619,7 @@ bool UFlibHotPatcherCoreHelper::SerializeAssetRegistry(IAssetRegistry* AssetRegi
 	AssetRegistry->InitializeTemporaryAssetRegistryState(State, SaveOptions, true);
 	for(const auto& AssetPackagePath:PackagePaths)
 	{
-		if (State.GetAssetByObjectPath(FName(*AssetPackagePath)))
+		if (State.GetAssetByObjectPath(FSoftObjectPath(*AssetPackagePath)))
 		{
 			UE_LOG(LogHotPatcherCoreHelper, Warning, TEXT("%s already add to AssetRegistryState!"), *AssetPackagePath);
 			continue;
